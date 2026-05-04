@@ -241,6 +241,16 @@ func prepareClusterConfigSpec(ctx context.Context, plan, state *models.ClusterRe
 		updateMaskPaths = append(updateMaskPaths, "config_spec.backup_retain_period_days")
 	}
 
+	if !plan.PerformanceDiagnostics.Equal(state.PerformanceDiagnostics) {
+		config.SetPerformanceDiagnostics(models.ExpandPerformanceDiagnostics(ctx, plan.PerformanceDiagnostics, diags))
+
+		if diags.HasError() {
+			return config, updateMaskPaths
+		}
+
+		updateMaskPaths = append(updateMaskPaths, "config_spec.performance_diagnostics")
+	}
+
 	return config, updateMaskPaths
 }
 

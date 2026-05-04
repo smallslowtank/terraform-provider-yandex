@@ -25,6 +25,7 @@ import (
 	"github.com/yandex-cloud/terraform-provider-yandex/common"
 	"github.com/yandex-cloud/terraform-provider-yandex/common/defaultschema"
 	"github.com/yandex-cloud/terraform-provider-yandex/pkg/mdbcommon"
+	"github.com/yandex-cloud/terraform-provider-yandex/pkg/planmodifiers"
 	"github.com/yandex-cloud/terraform-provider-yandex/yandex-framework/services/mdb_clickhouse_cluster_v2/customplanmodifiers"
 )
 
@@ -144,14 +145,15 @@ func (r *clusterResource) Schema(ctx context.Context, _ resource.SchemaRequest, 
 				Description: "Whether to copy schema on new ClickHouse hosts.",
 				Optional:    true,
 			},
-			"clickhouse":          ClickHouseSchema(),
-			"zookeeper":           ZooKeeperSchema(),
-			"cloud_storage":       CloudStorageSchema(),
-			"backup_window_start": BackupWindowStart(),
-			"access":              AccessSchema(),
-			"hosts":               HostsSchema(),
-			"shards":              ShardsSchema(),
-			"restore":             RestoreSchema(),
+			"clickhouse":              ClickHouseSchema(),
+			"zookeeper":               ZooKeeperSchema(),
+			"cloud_storage":           CloudStorageSchema(),
+			"backup_window_start":     BackupWindowStart(),
+			"access":                  AccessSchema(),
+			"hosts":                   HostsSchema(),
+			"shards":                  ShardsSchema(),
+			"restore":                 RestoreSchema(),
+			"performance_diagnostics": PerformanceDiagnosticsSchema(),
 		},
 		Blocks: map[string]schema.Block{
 			"shard_group":        ShardGroupSchema(),
@@ -1937,6 +1939,34 @@ func RestoreSchema() schema.SingleNestedAttribute {
 				ElementType: types.StringType,
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.RequiresReplace(),
+				},
+			},
+		},
+	}
+}
+
+func PerformanceDiagnosticsSchema() schema.SingleNestedAttribute {
+	return schema.SingleNestedAttribute{
+		MarkdownDescription: "Performance diagnostics configuration",
+		Computed:            true,
+		Optional:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
+		Attributes: map[string]schema.Attribute{
+			"enabled": schema.BoolAttribute{
+				MarkdownDescription: "Enabled performance diagnostics.",
+				Optional:            true,
+				PlanModifiers: []planmodifier.Bool{
+					boolplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"processes_refresh_interval": schema.StringAttribute{
+				MarkdownDescription: "Refresh interval for performance diagnostics data. Specify the value duration format, for example `\"15s\"`, `\"1m0s\"`, or `\"1h0m0s\"`.",
+				Optional:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+					planmodifiers.DurationPlanModifier(),
 				},
 			},
 		},

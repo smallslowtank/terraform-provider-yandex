@@ -172,6 +172,7 @@ func refreshDataSourceState(ctx context.Context, prevState, state *models.Cluste
 	state.SqlUserManagement = mdbcommon.FlattenBoolWrapper(ctx, cluster.Config.SqlUserManagement, diags)
 	state.EmbeddedKeeper = mdbcommon.FlattenBoolWrapper(ctx, cluster.Config.EmbeddedKeeper, diags)
 	state.BackupRetainPeriodDays = mdbcommon.FlattenInt64Wrapper(ctx, cluster.Config.BackupRetainPeriodDays, diags)
+	state.PerformanceDiagnostics = models.FlattenPerformanceDiagnostics(ctx, cluster.Config.PerformanceDiagnostics, diags)
 
 	currentFormatSchemas := clickhouseApi.ListFormatSchemas(ctx, sdk, diags, cid)
 	state.FormatSchema = models.FlattenListFormatSchema(ctx, currentFormatSchemas, diags)

@@ -40,10 +40,11 @@ type ClusterResource struct {
 	ShardGroup   types.List `tfsdk:"shard_group"`
 	Extension    types.Set  `tfsdk:"extension"`
 
-	HostSpecs            types.Map      `tfsdk:"hosts"`
-	Timeouts             timeouts.Value `tfsdk:"timeouts"`
-	CopySchemaOnNewHosts types.Bool     `tfsdk:"copy_schema_on_new_hosts"`
-	Restore              types.Object   `tfsdk:"restore"`
+	HostSpecs              types.Map      `tfsdk:"hosts"`
+	Timeouts               timeouts.Value `tfsdk:"timeouts"`
+	CopySchemaOnNewHosts   types.Bool     `tfsdk:"copy_schema_on_new_hosts"`
+	Restore                types.Object   `tfsdk:"restore"`
+	PerformanceDiagnostics types.Object   `tfsdk:"performance_diagnostics"`
 }
 
 var ClusterResourceAttrTypes = map[string]attr.Type{
@@ -83,6 +84,7 @@ var ClusterResourceAttrTypes = map[string]attr.Type{
 	"timeouts":                 timeouts.Type{},
 	"copy_schema_on_new_hosts": types.BoolType,
 	"restore":                  types.ObjectType{AttrTypes: RestoreAttrTypes},
+	"performance_diagnostics":  types.ObjectType{AttrTypes: PerformanceDiagnosticsAttrTypes},
 }
 
 type ClusterDataSource struct {
@@ -112,6 +114,7 @@ type ClusterDataSource struct {
 	AdminPassword          types.String `tfsdk:"admin_password"`
 	EmbeddedKeeper         types.Bool   `tfsdk:"embedded_keeper"`
 	BackupRetainPeriodDays types.Int64  `tfsdk:"backup_retain_period_days"`
+	PerformanceDiagnostics types.Object `tfsdk:"performance_diagnostics"`
 
 	FormatSchema types.Set  `tfsdk:"format_schema"`
 	MLModel      types.Set  `tfsdk:"ml_model"`
@@ -150,6 +153,7 @@ var ClusterDataSourceTypes = map[string]attr.Type{
 	"admin_password":            types.StringType,
 	"embedded_keeper":           types.BoolType,
 	"backup_retain_period_days": types.Int64Type,
+	"performance_diagnostics":   types.ObjectType{AttrTypes: PerformanceDiagnosticsAttrTypes},
 
 	"format_schema": types.SetType{ElemType: types.ObjectType{AttrTypes: FormatSchemaAttrTypes}},
 	"ml_model":      types.SetType{ElemType: types.ObjectType{AttrTypes: MLModelAttrTypes}},

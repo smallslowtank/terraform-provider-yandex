@@ -55,6 +55,7 @@ func prepareClusterCreateRequest(
 		AdminPassword:          plan.AdminPassword.ValueString(),
 		EmbeddedKeeper:         mdbcommon.ExpandBoolWrapper(ctx, plan.EmbeddedKeeper, diags),
 		BackupRetainPeriodDays: mdbcommon.ExpandInt64Wrapper(ctx, plan.BackupRetainPeriodDays, diags),
+		PerformanceDiagnostics: models.ExpandPerformanceDiagnostics(ctx, plan.PerformanceDiagnostics, diags),
 	}
 	var databaseSpec []*clickhouse.DatabaseSpec
 	if configSpec.Clickhouse != nil && configSpec.Clickhouse.Config != nil && len(configSpec.Clickhouse.Config.DefaultDatabase.GetValue()) != 0 {

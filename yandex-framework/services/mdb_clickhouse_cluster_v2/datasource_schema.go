@@ -103,13 +103,14 @@ func DataSourceClusterSchema(ctx context.Context) schema.Schema {
 				MarkdownDescription: "Whether to copy schema on new ClickHouse hosts.",
 				Computed:            true,
 			},
-			"clickhouse":          DataSourceClickHouseSchema(),
-			"zookeeper":           DataSourceZooKeeperSchema(),
-			"cloud_storage":       DataSourceCloudStorageSchema(),
-			"backup_window_start": DataSourceBackupWindowStart(),
-			"access":              DataSourceAccessSchema(),
-			"hosts":               DataSourceHostsSchema(),
-			"shards":              DataSourceShardsSchema(),
+			"clickhouse":              DataSourceClickHouseSchema(),
+			"zookeeper":               DataSourceZooKeeperSchema(),
+			"cloud_storage":           DataSourceCloudStorageSchema(),
+			"backup_window_start":     DataSourceBackupWindowStart(),
+			"access":                  DataSourceAccessSchema(),
+			"hosts":                   DataSourceHostsSchema(),
+			"shards":                  DataSourceShardsSchema(),
+			"performance_diagnostics": DataSourcePerformanceDiagnosticsSchema(),
 		},
 		Blocks: map[string]schema.Block{
 			"shard_group":        DataSourceShardGroupSchema(),
@@ -1144,6 +1145,23 @@ func DataSourceExtensionSchema() schema.SetNestedBlock {
 					MarkdownDescription: "Version of the extension.",
 					Computed:            true,
 				},
+			},
+		},
+	}
+}
+
+func DataSourcePerformanceDiagnosticsSchema() schema.SingleNestedAttribute {
+	return schema.SingleNestedAttribute{
+		MarkdownDescription: "Performance diagnostics configuration",
+		Computed:            true,
+		Attributes: map[string]schema.Attribute{
+			"enabled": schema.BoolAttribute{
+				MarkdownDescription: "Enabled performance diagnostics.",
+				Computed:            true,
+			},
+			"processes_refresh_interval": schema.StringAttribute{
+				MarkdownDescription: "Refresh interval for performance diagnostics data. Specify the value duration format, for example `\"15s\"`, `\"1m0s\"`, or `\"1h0m0s\"`.",
+				Computed:            true,
 			},
 		},
 	}

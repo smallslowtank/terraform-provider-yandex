@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/terraform-plugin-framework-timeouts/resource/timeouts"
@@ -13,6 +14,7 @@ import (
 	clickhouse "github.com/yandex-cloud/go-genproto/yandex/cloud/mdb/clickhouse/v1"
 	clickhouseConfig "github.com/yandex-cloud/go-genproto/yandex/cloud/mdb/clickhouse/v1/config"
 	"google.golang.org/genproto/googleapis/type/timeofday"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/yandex-cloud/terraform-provider-yandex/pkg/datasize"
@@ -65,6 +67,7 @@ var (
 			"timeouts":                 timeouts.Value{},
 			"copy_schema_on_new_hosts": types.BoolNull(),
 			"restore":                  types.ObjectNull(models.RestoreAttrTypes),
+			"performance_diagnostics":  types.ObjectNull(models.PerformanceDiagnosticsAttrTypes),
 		},
 	)
 
@@ -639,6 +642,13 @@ var (
 			"timeouts":                 timeouts.Value{},
 			"copy_schema_on_new_hosts": types.BoolNull(),
 			"restore":                  types.ObjectNull(models.RestoreAttrTypes),
+			"performance_diagnostics": types.ObjectValueMust(
+				models.PerformanceDiagnosticsAttrTypes,
+				map[string]attr.Value{
+					"enabled":                    types.BoolValue(true),
+					"processes_refresh_interval": types.StringValue("20s"),
+				},
+			),
 		},
 	)
 )
@@ -688,6 +698,7 @@ func TestYandexProvider_MDBClickHouseClusterPrepareCreateRequests(t *testing.T) 
 					AdminPassword:          "",
 					EmbeddedKeeper:         nil,
 					BackupRetainPeriodDays: nil,
+					PerformanceDiagnostics: nil,
 				},
 				DeletionProtection:  false,
 				SecurityGroupIds:    nil,
@@ -998,6 +1009,10 @@ func TestYandexProvider_MDBClickHouseClusterPrepareCreateRequests(t *testing.T) 
 					AdminPassword:          "",
 					EmbeddedKeeper:         wrapperspb.Bool(false),
 					BackupRetainPeriodDays: wrapperspb.Int64(14),
+					PerformanceDiagnostics: &clickhouse.PerformanceDiagnostics{
+						Enabled:                  wrapperspb.Bool(true),
+						ProcessesRefreshInterval: durationpb.New(time.Duration(20 * time.Second)),
+					},
 				},
 				DatabaseSpecs: []*clickhouse.DatabaseSpec{
 					&clickhouse.DatabaseSpec{
